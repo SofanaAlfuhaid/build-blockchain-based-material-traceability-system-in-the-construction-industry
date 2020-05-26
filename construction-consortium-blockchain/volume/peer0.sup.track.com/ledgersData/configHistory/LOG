@@ -1,0 +1,15 @@
+=============== May 25, 2020 (UTC) ===============
+03:02:28.138915 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+03:02:28.795953 db@open opening
+03:02:28.799411 version@stat F·[] S·0B[] Sc·[]
+03:02:29.293433 db@janitor F·2 G·0
+03:02:29.293494 db@open done T·497.46834ms
+=============== May 25, 2020 (UTC) ===============
+03:53:55.916050 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+03:53:56.076277 version@stat F·[] S·0B[] Sc·[]
+03:53:56.086273 db@open opening
+03:53:56.102564 journal@recovery F·1
+03:53:56.110864 journal@recovery recovering @1
+03:53:56.192496 version@stat F·[] S·0B[] Sc·[]
+03:53:56.473447 db@janitor F·2 G·0
+03:53:56.478889 db@open done T·390.4763ms

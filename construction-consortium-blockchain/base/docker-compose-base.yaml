@@ -1,0 +1,108 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+version: '2'
+
+services:
+
+  orderer.track.com:
+    container_name: orderer.track.com
+    extends:
+      file: peer-base.yaml
+      service: orderer-base
+    volumes:
+        - ../channel-artifacts/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
+        - ../crypto-config/ordererOrganizations/track.com/orderers/orderer.track.com/msp:/var/hyperledger/orderer/msp
+        - ../crypto-config/ordererOrganizations/track.com/orderers/orderer.track.com/tls/:/var/hyperledger/orderer/tls
+        - ../volume/orderer.track.com:/var/hyperledger/production/orderer
+    ports:
+      - 7050:7050
+
+  peer0.cst.track.com:
+    container_name: peer0.cst.track.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer0.cst.track.com
+      - CORE_PEER_ADDRESS=peer0.cst.track.com:7051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.cst.track.com:7052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.cst.track.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.cst.track.com:7051
+      - CORE_PEER_LOCALMSPID=CSTMSP
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdbcst:5984
+      # The CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME and CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD
+      # provide the credentials for ledger to connect to CouchDB.  The username and password must
+      # match the username and password set for the associated CouchDB.
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=      
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../crypto-config/peerOrganizations/cst.track.com/peers/peer0.cst.track.com/msp:/etc/hyperledger/fabric/msp
+        - ../crypto-config/peerOrganizations/cst.track.com/peers/peer0.cst.track.com/tls:/etc/hyperledger/fabric/tls
+        - ../volume/peer0.cst.track.com:/var/hyperledger/production
+    ports:
+      - 7051:7051
+      
+  peer0.sup.track.com:
+    container_name: peer0.sup.track.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer0.sup.track.com
+      - CORE_PEER_ADDRESS=peer0.sup.track.com:9051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:9051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.sup.track.com:9052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:9052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.sup.track.com:9051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.sup.track.com:9051
+      - CORE_PEER_LOCALMSPID=SUPMSP
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdbsup:5984
+      # The CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME and CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD
+      # provide the credentials for ledger to connect to CouchDB.  The username and password must
+      # match the username and password set for the associated CouchDB.
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=      
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../crypto-config/peerOrganizations/sup.track.com/peers/peer0.sup.track.com/msp:/etc/hyperledger/fabric/msp
+        - ../crypto-config/peerOrganizations/sup.track.com/peers/peer0.sup.track.com/tls:/etc/hyperledger/fabric/tls
+        - ../volume/peer0.sup.track.com:/var/hyperledger/production
+    ports:
+      - 9051:9051
+
+  peer0.reg.track.com:
+    container_name: peer0.reg.track.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer0.reg.track.com
+      - CORE_PEER_ADDRESS=peer0.reg.track.com:11051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:11051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.reg.track.com:11052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:11052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.reg.track.com:11051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.reg.track.com:11051
+      - CORE_PEER_LOCALMSPID=REGMSP
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdbreg:5984
+      # The CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME and CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD
+      # provide the credentials for ledger to connect to CouchDB.  The username and password must
+      # match the username and password set for the associated CouchDB.
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=      
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../crypto-config/peerOrganizations/reg.track.com/peers/peer0.reg.track.com/msp:/etc/hyperledger/fabric/msp
+        - ../crypto-config/peerOrganizations/reg.track.com/peers/peer0.reg.track.com/tls:/etc/hyperledger/fabric/tls
+        - ../volume/peer0.reg.track.com:/var/hyperledger/production
+    ports:
+      - 11051:11051
