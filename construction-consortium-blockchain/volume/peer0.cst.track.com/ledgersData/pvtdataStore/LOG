@@ -14,3 +14,41 @@
 03:53:58.299971 version@stat F·[1] S·174B[174B] Sc·[0.25]
 03:53:58.388245 db@janitor F·3 G·0
 03:53:58.388993 db@open done T·172.2568ms
+=============== May 26, 2020 (UTC) ===============
+05:12:27.673847 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+05:12:27.725424 version@stat F·[1] S·174B[174B] Sc·[0.25]
+05:12:27.727862 db@open opening
+05:12:27.742178 journal@recovery F·1
+05:12:27.750217 journal@recovery recovering @3
+05:12:27.829363 memdb@flush created L0@5 N·10 S·193B "myc..l\x00\x00,d18":"myc..l\x00\a,d9"
+05:12:27.841062 version@stat F·[2] S·367B[367B] Sc·[0.50]
+05:12:27.924800 db@janitor F·4 G·0
+05:12:27.927106 db@open done T·195.6582ms
+=============== May 26, 2020 (UTC) ===============
+08:42:17.214631 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+08:42:17.263041 version@stat F·[2] S·367B[367B] Sc·[0.50]
+08:42:17.268544 db@open opening
+08:42:17.303900 journal@recovery F·1
+08:42:17.310760 journal@recovery recovering @6
+08:42:17.407161 memdb@flush created L0@8 N·4 S·155B "myc..l\x00\x00,d22":"myc..l\x00\a,d20"
+08:42:17.468656 version@stat F·[3] S·522B[522B] Sc·[0.75]
+08:42:17.617445 db@janitor F·5 G·0
+08:42:17.619688 db@open done T·346.0675ms
+=============== May 27, 2020 (UTC) ===============
+02:55:22.938951 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+02:55:24.036896 version@stat F·[3] S·522B[522B] Sc·[0.75]
+02:55:24.041304 db@open opening
+02:55:24.056545 journal@recovery F·1
+02:55:24.073193 journal@recovery recovering @9
+02:55:24.172143 memdb@flush created L0@11 N·22 S·272B "myc..l\x00\x00,d45":"myc..l\x00\a,d25"
+02:55:24.203269 version@stat F·[4] S·794B[794B] Sc·[1.00]
+02:55:24.328664 db@janitor F·6 G·0
+02:55:24.331069 table@compaction L0·4 -> L1·0 S·794B Q·47
+02:55:24.331166 db@open done T·288.0189ms
+02:55:24.437848 table@build created L1@14 N·1 S·127B "myc..l\x00\x01,v46":"myc..l\x00\x01,v46"
+02:55:24.441364 version@stat F·[0 1] S·127B[0B 127B] Sc·[0.00 0.00]
+02:55:24.465829 table@compaction committed F-3 S-667B Ke·0 D·42 T·132.9881ms
+02:55:24.496240 table@remove removed @11
+02:55:24.515979 table@remove removed @8
+02:55:24.526606 table@remove removed @5
+02:55:24.538198 table@remove removed @2

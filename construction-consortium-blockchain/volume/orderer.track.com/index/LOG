@@ -14,3 +14,40 @@
 03:53:54.444544 version@stat F·[1] S·310B[310B] Sc·[0.25]
 03:53:54.736529 db@janitor F·3 G·0
 03:53:54.748309 db@open done T·689.9469ms
+=============== May 26, 2020 (UTC) ===============
+05:12:24.694823 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+05:12:24.890434 version@stat F·[1] S·310B[310B] Sc·[0.25]
+05:12:24.902388 db@open opening
+05:12:24.954380 journal@recovery F·1
+05:12:24.975865 journal@recovery recovering @3
+05:12:25.089386 memdb@flush created L0@5 N·11 S·285B "byf..nfo,v16":"myc..n\x01\x04,v25"
+05:12:25.122545 version@stat F·[2] S·595B[595B] Sc·[0.50]
+05:12:25.322391 db@janitor F·4 G·0
+05:12:25.329850 db@open done T·397.7442ms
+=============== May 26, 2020 (UTC) ===============
+08:42:15.167716 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+08:42:15.312558 version@stat F·[2] S·595B[595B] Sc·[0.50]
+08:42:15.322670 db@open opening
+08:42:15.402202 journal@recovery F·1
+08:42:15.414633 journal@recovery recovering @6
+08:42:15.519251 memdb@flush created L0@8 N·5 S·223B "byf..nfo,v28":"myc..n\x01\x05,v31"
+08:42:15.563238 version@stat F·[3] S·818B[818B] Sc·[0.75]
+08:42:15.699791 db@janitor F·5 G·0
+08:42:15.701313 db@open done T·370.628ms
+11:25:04.104872 table@compaction L0·3 -> L1·0 S·818B Q·47
+11:25:04.164925 table@build created L1@11 N·12 S·322B "byf..nfo,v28":"myc..n\x01\x05,v31"
+11:25:04.165765 version@stat F·[0 1] S·322B[0B 322B] Sc·[0.00 0.00]
+11:25:04.192265 table@compaction committed F-2 S-496B Ke·0 D·18 T·79.6776ms
+11:25:04.201724 table@remove removed @8
+11:25:04.206481 table@remove removed @5
+11:25:04.212716 table@remove removed @2
+=============== May 27, 2020 (UTC) ===============
+02:55:18.007065 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+02:55:18.345799 version@stat F·[0 1] S·322B[0B 322B] Sc·[0.00 0.00]
+02:55:18.357823 db@open opening
+02:55:18.396327 journal@recovery F·1
+02:55:18.414799 journal@recovery recovering @9
+02:55:18.640775 memdb@flush created L0@12 N·23 S·412B "byf..nfo,v34":"myc..n\x01\f,v55"
+02:55:18.681345 version@stat F·[1 1] S·734B[412B 322B] Sc·[0.25 0.00]
+02:55:19.085414 db@janitor F·4 G·0
+02:55:19.100020 db@open done T·731.1533ms
