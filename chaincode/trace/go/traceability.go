@@ -34,12 +34,12 @@ type PurchaseOrder struct {
 	ObjType        string `json:"obj"`
 	PONumber       string `json:"po"`
 	ItemNumber     string `json:"itemno"`
-	itemName       string `json:"itemname"`
+	ItemName       string `json:"itemname"`
 	Description    string `json:"desc"`
-	Quantity       int    `json:"quan"`
+	Quantity       float64   `json:"quan"`
 	UintPrice      string `json:"uprice"`
 	Amount         string `json:"amt"`
-	State          string `json:"state"`
+	// State          string `json:"state"`
 	ShipTo         string `json:"addr"` // buyer location
 	DeliveryDue    string `json:"delvry"`  //at what time buyer want the delivery
 	BuyerID        string `json:"buyerid"`
@@ -50,6 +50,7 @@ type PurchaseOrder struct {
 	UpdateTs       string `json:"uts"` 
 	PoStatus       string `json:"posts"`        //create 	, Inprogress, reject, Instock
 	Ownership      string `json:"ownr"`
+	Standard       []float64  `json:"standard"`
 	
 	//Create Delivery Order , 
 	//on delivery Order ownership change to carrierid, 
@@ -59,13 +60,13 @@ type PurchaseOrder struct {
 	ShipmentId     string `json:"shid"`  //delivery order number
 	Truckno        string `json:"trno"`
 	RegulatorId    string `json:"regid"`    
-	DoStatus       string `json:"dosts"`   //pending ,expecting confirmation from regulator, shipped, inDispute, arrived,
+	DoStatus       string `json:"dosts"`   //pending ,expecting confirmation from regulator, shipped, dispute, arrived,
 	GTIN           string `json:"gtin"`  
 	
 	
 	// Logistics Approval
 
-	// DoStatus change to shiped or inDispute
+	// DoStatus change to shiped or dispute
 
 
 	//Inventory Manager
@@ -83,7 +84,11 @@ type PurchaseOrder struct {
 	//GRStatus change to received
 	//ownership change to InventoryManagerId
 	//GRStatus change to backorder in case of dispute
-	
+	Innerdia       float64 `json:"innerdia"`
+	Outerdia       float64 `json:"outerdia"`
+	Wallwidth      float64 `json:"wallwidth"`
+	StadBatchWeght float64 `json:"stanbathweght"`	
+
 	
 	//Foremen
 	ForemenUpdate  []ForemenType  `json:"foremenupdate"`
@@ -96,7 +101,7 @@ type ForemenType struct 	{
 	ForDesc         string `json:"fdesc"`  //same as description
 	CCOrder         string `json:"ccorder"`  // created
 	CONumber        string `json:"conum"`
-	PQuantity       int    `json:"pquanty"`
+	PQuantity       float64   `json:"pquanty"`
 	UpdateTs        string `json:"futs"`
 
 	
@@ -177,6 +182,11 @@ func (tr *Trace) PurchaseOrder(stub shim.ChaincodeStubInterface) peer.Response {
 	orderToSave.ObjType  = "PurchaseOrder"
 	orderToSave.DoStatus = "pending" 
 	orderToSave.Ownership = orderToSave.SupplierID 
+	if orderToSave.ItemName == "Pipe" {
+		orderToSave.Standard = append(orderToSave.Standard, 3.068,3.5,0.216,1.41) 
+	}else {
+		orderToSave.Standard = append(orderToSave.Standard, 40)
+	}
 	orderJson, _:=json.Marshal(orderToSave)
 
 
@@ -280,7 +290,77 @@ func (tr *Trace) supplierRecOrderSts(stub shim.ChaincodeStubInterface) peer.Resp
 		return shim.Success(respJSON)
 		
 }
+	 
+func (tr *Trace) supplierOrderCorrection(stub shim.ChaincodeStubInterface) peer.Response{
+	_TraceingLogger.Infof("supplierOrderCorrection")
+	_, args:= stub.GetFunctionAndParameters()
+	if len(args) < 1 {
+		_TraceingLogger.Errorf("supplierOrderCorrection : Invalid number of argument provided")
+		return shim.Error("Invalid number of argument provided")
+	}
+	var logisticOrder PurchaseOrder
+	err := json.Unmarshal([]byte(args[0]), &logisticOrder)
+	if err != nil {
+		_TraceingLogger.Errorf("supplierOrderCorrection : Invalid json provided as input")
+		return shim.Error("Invalid json provided as input")
+	}
+	authorize, _ := tr.getInvokerIdentity(stub)
+
+	if authorize == false {
+		return shim.Error("Unauthorize access")
+	}
+	RecordBytes, _:= stub.GetState(logisticOrder.PONumber)
+	if len(RecordBytes) <= 0{
+		_TraceingLogger.Errorf("supplierOrderCorrection : Order does not exist")
+		return shim.Error("Order does not exist")
+	}
+	var existingOrder PurchaseOrder 
+	errOrder := json.Unmarshal([]byte(RecordBytes), &existingOrder)
+
+	if errOrder != nil {
+		_TraceingLogger.Errorf("supplierOrderCorrection : existing Order Unmarshaling Error")
+		return shim.Error("existing Order Unmarshaling Error")
+	}
+    if existingOrder.GRStatus == "backorder" {
+
+		existingOrder.PoStatus = logisticOrder.PoStatus   // inProgress
+		existingOrder.UpdateTs = logisticOrder.UpdateTs
 	
+		OrderBytes, err := json.Marshal(existingOrder)
+		if err !=nil {
+			_TraceingLogger.Errorf("supplierOrderCorrection : Marshalling Error : " + string(err.Error()))
+			return shim.Error("supplierOrderCorrection : Marshalling Error : " + string(err.Error()))
+		}
+		_TraceingLogger.Infof("supplierOrderCorrection : saving the Create Order : " + existingOrder.PONumber)
+	
+		errorr :=stub.PutState(logisticOrder.PONumber, OrderBytes)
+	
+		if errorr != nil {
+			_TraceingLogger.Errorf("supplierOrderCorrection : Put State Failed Error : " + string(errorr.Error())) 
+			return shim.Error("Put State Failed Error : " + string(errorr.Error()))
+		}
+	
+		_TraceingLogger.Infof("supplierOrderCorrection : PutState Success : " + string(OrderBytes))
+		err2 := stub.SetEvent(_LogiscticApproval, OrderBytes)
+		if err2 != nil {
+			_TraceingLogger.Errorf("supplierOrderCorrection : Event not generating for : " + _LogiscticApproval)
+		}
+	}else {
+		_TraceingLogger.Errorf("supplierOrderCorrection : GRStatus is not in backorder state")
+		return shim.Error("GRStatus is not in backorder state")
+	}
+	
+	resultData := map[string]interface{}{
+		"trxnID":        stub.GetTxID(),
+		"OPNumer":       logisticOrder.PONumber,
+		"message":       "Supplier Order corrected successfully.",
+		"Order":        logisticOrder,
+	}
+
+	 respJSON,_ := json.Marshal(resultData)
+	 return shim.Success(respJSON)
+
+}
 	// Creating Delivery Order by supplier 
 
 func (tr *Trace) createOrderBySupplier(stub shim.ChaincodeStubInterface) peer.Response {
@@ -401,7 +481,7 @@ func (tr *Trace) logisticApproval(stub shim.ChaincodeStubInterface) peer.Respons
 	}
     if existingOrder.DoStatus == "expecting confirmation from regulator" {
 
-		existingOrder.DoStatus = logisticOrder.DoStatus   // shipped or inDispute
+		existingOrder.DoStatus = logisticOrder.DoStatus   // shipped or dispute
 		existingOrder.UpdateTs = logisticOrder.UpdateTs
 	
 		OrderBytes, err := json.Marshal(existingOrder)
@@ -482,7 +562,7 @@ func (tr *Trace) InventoryManagerReceipt(stub shim.ChaincodeStubInterface) peer.
 		_TraceingLogger.Errorf("InventoryManagerReciept : order is waiting confirmation from regulator")
 		return shim.Error("order is waiting confirmation from regulator")
 	}
-	if existingOrder.DoStatus == "inDispute" {
+	if existingOrder.DoStatus == "dispute" {
 		_TraceingLogger.Errorf("InventoryManagerReciept : It should go back to supplier for further correction")
 		return shim.Error("It should go back to supplier for further correction")	
 	}
@@ -564,13 +644,50 @@ func (tr *Trace) inventoryApproval(stub shim.ChaincodeStubInterface) peer.Respon
 		_TraceingLogger.Errorf("inventoryApproval : existing Order Unmarshaling Error")
 		return shim.Error("existing Order Unmarshaling Error")
 	}
-    if existingOrder.GRStatus == "pending" {
-
-		existingOrder.DoStatus = inventoryOrder.DoStatus  // arrived 
-		existingOrder.PoStatus = inventoryOrder.PoStatus   // inStock
-		existingOrder.GRStatus = inventoryOrder.GRStatus   // received or backorder(should go back to supplier)
-		existingOrder.UpdateTs = inventoryOrder.UpdateTs
-		existingOrder.Ownership = existingOrder.InvMngId
+    if existingOrder.GRStatus == "pending" && existingOrder.ItemName == "Pipe"{
+        if existingOrder.Standard[1] == inventoryOrder.Outerdia && existingOrder.Standard[0] == inventoryOrder.Innerdia && existingOrder.Standard[2] == inventoryOrder.Wallwidth {
+            if existingOrder.Quantity * existingOrder.Standard[3] == inventoryOrder.StadBatchWeght {
+				existingOrder.DoStatus = inventoryOrder.DoStatus  // arrived 
+				existingOrder.PoStatus = inventoryOrder.PoStatus   // inStock
+				existingOrder.GRStatus = inventoryOrder.GRStatus   // received 
+				existingOrder.UpdateTs = inventoryOrder.UpdateTs
+				existingOrder.Ownership = existingOrder.InvMngId
+			} else {
+				existingOrder.GRStatus = "backorder"   //backorder(should go back to supplier)
+			}
+		} else {
+			existingOrder.GRStatus = "backorder"   //backorder(should go back to supplier)
+		}
+	
+		OrderBytes, err := json.Marshal(existingOrder)
+		if err !=nil {
+			_TraceingLogger.Errorf("inventoryApproval : Marshalling Error : " + string(err.Error()))
+			return shim.Error("inventoryApproval : Marshalling Error : " + string(err.Error()))
+		}
+		_TraceingLogger.Infof("inventoryApproval : saving the Create Order : " + existingOrder.PONumber)
+	
+		errorr :=stub.PutState(inventoryOrder.PONumber, OrderBytes)
+	
+		if errorr != nil {
+			_TraceingLogger.Errorf("inventoryApproval : Put State Failed Error : " + string(errorr.Error())) 
+			return shim.Error("Put State Failed Error : " + string(errorr.Error()))
+		}
+	
+		_TraceingLogger.Infof("inventoryApproval : PutState Success : " + string(OrderBytes))
+		err2 := stub.SetEvent(_InventoryApproval, OrderBytes)
+		if err2 != nil {
+			_TraceingLogger.Errorf("inventoryApproval : Event not generating for : " + _InventoryApproval)
+		}
+	}else if existingOrder.GRStatus == "pending" && existingOrder.ItemName == "Cement" {
+		if existingOrder.Quantity * existingOrder.Standard[0] == inventoryOrder.StadBatchWeght {
+			existingOrder.DoStatus = inventoryOrder.DoStatus  // arrived 
+			existingOrder.PoStatus = inventoryOrder.PoStatus   // inStock
+			existingOrder.GRStatus = inventoryOrder.GRStatus   // received 
+			existingOrder.UpdateTs = inventoryOrder.UpdateTs
+			existingOrder.Ownership = existingOrder.InvMngId
+		} else {
+			existingOrder.GRStatus = "backorder"   //backorder(should go back to supplier)
+		}
 	
 		OrderBytes, err := json.Marshal(existingOrder)
 		if err !=nil {
@@ -592,8 +709,8 @@ func (tr *Trace) inventoryApproval(stub shim.ChaincodeStubInterface) peer.Respon
 			_TraceingLogger.Errorf("inventoryApproval : Event not generating for : " + _InventoryApproval)
 		}
 	}else {
-		_TraceingLogger.Errorf("inventoryApproval : good receipt status is not in pending state") 
-		return shim.Error("good receipt status is not in pending state")
+		_TraceingLogger.Errorf("inventoryApproval : good receipt status is not in pending state or itemName is not provided") 
+		return shim.Error("good receipt status is not in pending state or itemName is not provided")
 	}
 	
 	resultData := map[string]interface{}{
@@ -687,6 +804,9 @@ func (tr *Trace) FormenConsumption(stub shim.ChaincodeStubInterface) peer.Respon
 		if err2 != nil {
 			_TraceingLogger.Errorf("inventoryApproval : Event not generating for : " + _Foremen)
 		}
+	}else if existingOrder.GRStatus == "backorder" {
+		_TraceingLogger.Errorf("formenConsumption : Goods order has been sent back to supplier") 
+		return shim.Error("Goods order has been sent back to supplier") 
 	}else {
 		_TraceingLogger.Errorf("formenConsumption : Goods order is not received yet") 
 		return shim.Error("Goods order is not received yet") 

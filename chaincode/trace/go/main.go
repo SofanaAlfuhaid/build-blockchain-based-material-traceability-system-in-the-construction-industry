@@ -48,7 +48,11 @@ func  (sc *SmartContract) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 		case "consumptionApprovalForPouring":
 			response = sc.traceability.consumptionApprovalForPouring(stub)
 		case "materialQuery":
-			response = sc.traceability.materialQuery(stub, args)						
+			response = sc.traceability.materialQuery(stub, args)
+		case "supplierOrderCorrection":
+			response = sc.traceability.supplierOrderCorrection(stub)	
+		// case "getHistoryForPO":
+		// 	response = sc.traceability.getHistoryForPO(stub, args)								
 		default:
 			response = shim.Error("Invalid function name provided") 
 	}

@@ -2,6 +2,19 @@
 ### channel list
 peer channel list
 
+### channel create
+```sh
+export CHANNEL_NAME=mychannel && peer channel create -o orderer.track.com:7050 -c $CHANNEL_NAME -f ./channel-artifacts/$CHANNEL_NAME.tx --tls --cafile $ORDERER_CA
+
+```
+
+### channel join
+```sh
+peer channel join -b mychannel.block
+
+```
+
+
 ### chaincode install
 ```sh
 
@@ -38,17 +51,18 @@ docker logs container_name -f --tail 1000
 
 PurchaseOrder
 ```sh
-peer chaincode invoke -o orderer.track.com:7050 --tls --cafile $ORDERER_CA -C mychannel -n track -c '{"args":["purchaseOrder","{\"po\":\"QT041111111111111151\",\"posts\":\"create\",\"itemno\":\"111101\",\"itemname\":\"Cement\",\"desc\":\"poatlad cement 40 kg\",\"quan\":8,\"uprice\":\"100\",\"state\":\"Ottawa\",\"addr\":\"c-30\",\"delvry\":\"10-06-2020\",\"buyerid\":\"B0001\",\"suppid\":\"S0001\",\"cts\":\"456789\",\"uts\":\"456787678\",\"amt\":\"800\"}"]}'
+peer chaincode invoke -o orderer.track.com:7050 --tls --cafile $ORDERER_CA -C mychannel -n track -c '{"args":["purchaseOrder","{\"po\":\"QT041111111111111151\",\"posts\":\"create\",\"itemno\":\"111101\",\"itemname\":\"Cement\",\"desc\":\"poatlad cement 40 kg\",\"quan\":8,\"uprice\":\"100\",\"addr\":\"c-30\",\"delvry\":\"10-06-2020\",\"buyerid\":\"B0001\",\"suppid\":\"S0001\",\"cts\":\"456789\",\"uts\":\"456787678\",\"amt\":\"800\"}"]}'
 ```
 supplierRecOrderSts
 ```sh
 peer chaincode invoke -o orderer.track.com:7050 --tls --cafile $ORDERER_CA -C mychannel -n track -c '{"args":["supplierRecOrderSts","{\"po\":\"QT041111111111111151\",\"posts\":\"inProgress\",\"uts\":\"456787678\"}"]}'
 ```
 
-createOrderBySupplier
+supplierOrderCorrection
 ```sh
-peer chaincode invoke -o orderer.track.com:7050 --tls --cafile $ORDERER_CA -C mychannel -n track -c '{"args":["supplierRecOrderSts","{\"po\":\"QT041111111111111151\",\"posts\":\"inProgress\",\"uts\":\"456787678\"}"]}'
+peer chaincode invoke -o orderer.track.com:7050 --tls --cafile $ORDERER_CA -C mychannel -n track -c '{"args":["supplierOrderCorrection","{\"po\":\"QT041111111111111151\",\"posts\":\"inProgress\",\"uts\":\"456787678\"}"]}'
 ```
+
 
 createOrderBySupplier
 ```sh
@@ -66,7 +80,7 @@ peer chaincode invoke -o orderer.track.com:7050 --tls --cafile $ORDERER_CA -C my
 
 inventoryApproval
 ```sh
-peer chaincode invoke -o orderer.track.com:7050 --tls --cafile $ORDERER_CA -C mychannel -n track -c '{"args":["inventoryApproval","{\"po\":\"QT041111111111111151\",\"dosts\":\"arrived\",\"posts\":\"inStock\", \"grsts\":\"received\", \"uts\":\"456787678\"}"]}'
+peer chaincode invoke -o orderer.track.com:7050 --tls --cafile $ORDERER_CA -C mychannel -n trackk -c '{"args":["inventoryApproval","{\"po\":\"QT041111111111112222\",\"dosts\":\"arrived\",\"posts\":\"inStock\", \"grsts\":\"received\", \"uts\":\"456787678\", \"stanbathweght\":320, \"itemname\":\"Cement\"}"]}'
 ```
 
 FormenConsumption
