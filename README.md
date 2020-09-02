@@ -46,7 +46,7 @@ For Hyperledger Explorer:
 - jq - v1.6
 
 
-Here some useful instructions to run the blockchain network, more explanation and a demo will be added soon.
+### Here some useful scripts to run the blockchain network, more explanation and a demo will be added soon.
 
 ### channel list
 peer channel list
