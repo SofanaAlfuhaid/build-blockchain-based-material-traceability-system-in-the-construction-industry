@@ -1191,6 +1191,7 @@ func (tr *Trace) materialQuery(stub shim.ChaincodeStubInterface, args []string) 
 		return shim.Success(order)     
 }
 
+// GM query for Material
 func (tr *Trace) retriveMaterial(stub shim.ChaincodeStubInterface, criteria string, indexs ...string) []PurchaseOrder {
 
 	var finalSelector string
