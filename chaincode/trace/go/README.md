@@ -1,4 +1,4 @@
-## 22-April-2020
+## Here some useful scripts to create the channel (my channel), install chaincode, join peer and invoke transactions
 ### channel list
 peer channel list
 
