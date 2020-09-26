@@ -4,6 +4,9 @@ This project show how blockchain can be used to improve material traceability in
 
 Note: This code runs locally, and it has frontend, backend implementation, and blockchain Explorer in another repos. [backend](https://github.com/SofanaAlfuhaid/construction_backEnd) , [frontend](https://github.com/SofanaAlfuhaid/construction_frontEnd),[blockchain Explorer ](https://github.com/SofanaAlfuhaid/blockchain_explorer)
 
+click here to watch the [demo](https://streamable.com/xj7sq9).
+
+
 ## Prerequisites:
 
 A sample Hyperledger Fabric Binaries and Docker Images is downloaded, and the developer builds on top of them and customize a solution based on requirements.
@@ -46,7 +49,7 @@ For Hyperledger Explorer:
 - jq - v1.6
 
 
-### Here some useful scripts to run the blockchain network, more explanation and a demo will be added soon.
+### Here some useful scripts to run the blockchain network.
 
 ### channel list
 peer channel list
